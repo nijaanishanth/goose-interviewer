@@ -17,8 +17,8 @@ const ResumeReview = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 text-6xl animate-pulse">⛲</div>
       </div>
       <div className="container mx-auto relative z-10">
-        <Card className="p-8 bg-card/95 backdrop-blur-sm border border-border/50 shadow-xl">
-          <h1 className="text-4xl font-bold mb-4 text-lake-blue">
+        <Card variant="glass" className="p-8 animate-fade-in hover:shadow-2xl">
+          <h1 className="text-4xl font-bold mb-4 text-lake-blue smooth-transition hover:scale-105">
             📄 Resume Review
           </h1>
           <p className="text-foreground/80">

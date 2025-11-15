@@ -136,7 +136,7 @@ const Index = () => {
   }, [transcript, isListening, currentQuestion]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(217,50%,18%)] via-[hsl(215,30%,22%)] to-[hsl(25,40%,25%)]">
       {/* Header Section */}
       <header className="border-b border-border/50 backdrop-blur-sm bg-card/50">
         <div className="container mx-auto px-6 py-6">

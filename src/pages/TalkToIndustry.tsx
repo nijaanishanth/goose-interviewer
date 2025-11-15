@@ -2,7 +2,15 @@ import { Card } from "@/components/ui/card";
 
 const TalkToIndustry = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue p-8 relative overflow-hidden">
+    <div className="min-h-screen p-8 relative overflow-hidden">
+      {/* Mirror Lake Background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center -z-10"
+        style={{ backgroundImage: 'url(/mirror-lake.jpeg)' }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-lake-blue/40 via-grass-green/30 to-lake-light/40" />
+      </div>
+      
       <div className="absolute inset-0 opacity-10">
         <div className="absolute bottom-5 left-5 text-5xl">🌸</div>
         <div className="absolute bottom-5 right-5 text-5xl">🌷</div>

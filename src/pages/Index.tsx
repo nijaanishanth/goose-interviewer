@@ -138,9 +138,16 @@ const Index = () => {
   }, [transcript, isListening, currentQuestion]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue">
+    <div className="min-h-screen relative">
+      {/* Mirror Lake Background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center -z-10"
+        style={{ backgroundImage: 'url(/mirror-lake.jpeg)' }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-lake-blue/30 via-grass-green/20 to-lake-light/30" />
+      </div>
       {/* Header Section */}
-      <header className="border-b border-border/50 backdrop-blur-sm bg-card/80 relative overflow-hidden">
+      <header className="border-b border-border/50 backdrop-blur-md bg-card/80 relative overflow-hidden shadow-sm">
         <div className="absolute inset-0 opacity-10">
           <span className="absolute top-2 left-10 text-2xl">🦆</span>
           <span className="absolute top-2 right-10 text-2xl">🦆</span>

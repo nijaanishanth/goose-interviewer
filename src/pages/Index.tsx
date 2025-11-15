@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play, Mic, MicOff, Sparkles } from "lucide-react";
+import Goose from "@/components/Goose";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { getRandomQuestion, getQuestionsByCategory, type InterviewQuestion, type QuestionCategory } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
@@ -176,15 +177,9 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
           {/* Left Panel - Goose Avatar */}
           <div className="lg:col-span-2 relative">
-            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
-              <div className="text-center space-y-4">
-                <div className="text-8xl sm:text-9xl animate-pulse">🪿</div>
-                <div className="space-y-2">
-                  <p className="text-lg sm:text-xl font-semibold text-foreground">
-                    Ready to Practice
-                  </p>
-                </div>
-              </div>
+            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
+              {/* Goose component will handle speaking the question and animation */}
+              <Goose question={currentQuestion?.question ?? null} />
             </Card>
           </div>
 

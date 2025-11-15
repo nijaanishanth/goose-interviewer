@@ -6,18 +6,32 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[hsl(217,50%,18%)] via-[hsl(215,30%,22%)] to-[hsl(25,40%,25%)]">
-      <Card className="p-12 max-w-2xl text-center bg-white border-border/50 shadow-2xl">
-        <h1 className="text-5xl font-bold mb-4 text-[hsl(217,91%,35%)]">
-          🪿 Goose Interview Coach
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-light relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute bottom-0 left-0 w-32 h-32 text-6xl">🌸</div>
+        <div className="absolute bottom-0 right-0 w-32 h-32 text-6xl">🌷</div>
+        <div className="absolute top-1/4 left-10 text-4xl">🦆</div>
+        <div className="absolute top-1/3 right-20 text-4xl">🦆</div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 text-7xl animate-pulse">⛲</div>
+      </div>
+      
+      <Card className="p-12 max-w-2xl text-center bg-card/95 backdrop-blur-sm border-border/50 shadow-2xl relative z-10">
+        <div className="mb-4">
+          <span className="text-6xl">🪿</span>
+        </div>
+        <h1 className="text-5xl font-bold mb-4 text-lake-blue">
+          Goose Interview Coach
         </h1>
-        <p className="text-lg text-slate-600 mb-8">
-          Practice interview questions with a friendly (but serious) goose. Improve your answers and get feedback in real time.
+        <p className="text-lg text-foreground/80 mb-8">
+          Practice interview questions with a friendly (but serious) goose by the peaceful lake. Improve your answers and get feedback in real time.
         </p>
-        <div className="flex justify-center">
-          <Button size="lg" className="px-8 shadow-lg bg-goose-orange hover:bg-goose-orange/90" onClick={() => navigate('/interview')}>
+        <div className="flex justify-center gap-2">
+          <span className="text-2xl">🌸</span>
+          <Button size="lg" className="px-8 shadow-lg bg-duck-orange hover:bg-duck-orange/90" onClick={() => navigate('/interview')}>
             Get Started
           </Button>
+          <span className="text-2xl">🌸</span>
         </div>
       </Card>
     </div>

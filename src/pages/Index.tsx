@@ -7,6 +7,7 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { getRandomQuestion, type InterviewQuestion } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Conversation } from "@/components/cvi/components/conversation";
 
 const Index = () => {
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
@@ -14,6 +15,8 @@ const Index = () => {
   const [liveFeedback, setLiveFeedback] = useState<string>("");
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
   const [isGeneratingLiveFeedback, setIsGeneratingLiveFeedback] = useState(false);
+  const [conversationUrl, setConversationUrl] = useState<string | null>(null);
+  const [conversationToken, setConversationToken] = useState<string | null>(null);
   const { transcript, isListening, isSpeaking, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const { toast } = useToast();
 
@@ -51,6 +54,48 @@ const Index = () => {
 
   const handleStopListening = () => {
     stopListening();
+  };
+
+  // Start the Tavus/Daily conversation by requesting a server-created URL
+  const startConversation = async () => {
+    try {
+      // Prefer Python backend if configured
+      const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      console.log('Starting conversation, calling:', `${backendBase}/api/create-conversation`);
+      
+      // Try Tavus-backed conversation first
+      let resp = await fetch(`${backendBase}/api/create-conversation`, { method: 'POST' });
+      console.log('Backend response status:', resp.status, resp.ok);
+      
+      if (!resp.ok) {
+        // Fallback to simple Daily room creation
+        console.log('Falling back to /api/create-room');
+        resp = await fetch(`${backendBase}/api/create-room`, { method: 'POST' });
+      }
+      if (!resp.ok) {
+        // fallback to Supabase Edge Function if backend not running
+        console.log('Falling back to Supabase function');
+        const { data, error } = await supabase.functions.invoke('create-conversation', { body: {} });
+        if (error) throw error;
+        if (!data?.url) throw new Error('No URL returned from Supabase function');
+        setConversationUrl(data.url as string);
+        return;
+      }
+      const json = await resp.json();
+      console.log('Backend response JSON:', json);
+      
+      if (!json?.url) throw new Error('No URL in backend response');
+      
+      console.log('Setting conversation URL:', json.url);
+      setConversationUrl(json.url as string);
+      if (json.token) {
+        console.log('Setting conversation token');
+        setConversationToken(json.token as string);
+      }
+    } catch (err) {
+      console.error('Failed to start conversation:', err);
+      toast({ title: 'Conversation error', description: 'Failed to start conversation. Check backend and API keys.', variant: 'destructive' });
+    }
   };
 
   const handleGetFeedback = async () => {
@@ -151,24 +196,34 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left Panel - Goose Avatar (60% width on desktop) */}
-          <div className="lg:col-span-3">
-            <Card className="p-8 h-full min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-goose-orange/10 to-goose-yellow/10 border-2 border-goose-orange/20">
-              <div className="text-center space-y-4">
-                <div className="text-9xl animate-pulse">🪿</div>
-                <p className="text-xl font-semibold text-foreground">
-                  Goose Avatar
-                </p>
-                <p className="text-muted-foreground">(video goes here)</p>
-              </div>
-            </Card>
-          </div>
 
-          {/* Right Panel - Interactions (40% width on desktop) */}
-          <div className="lg:col-span-2 space-y-6">
+
+{/* Main Content */}
+<main className="container mx-auto px-6 py-8">
+  <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+    <div className="lg:col-span-3">
+      {conversationUrl ? (
+        <Conversation
+          conversationUrl={conversationUrl}
+          conversationToken={conversationToken || undefined}
+          onLeave={() => { setConversationUrl(null); setConversationToken(null); }}
+        />
+      ) : (
+        <Card className="p-8 h-full min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-goose-orange/10 to-goose-yellow/10 border-2 border-goose-orange/20">
+          <div className="text-center space-y-4">
+            <div className="text-9xl">🪿</div>
+            <p className="text-xl font-semibold text-foreground">Goose Avatar</p>
+            <p className="text-muted-foreground">Click below to start the conversation.</p>
+            <Button size="lg" className="mt-2" onClick={startConversation}>
+              <Play className="mr-2 h-5 w-5" /> Start Goose Call
+            </Button>
+          </div>
+        </Card>
+      )}
+    </div>
+
+    {/* Right Panel - Interactions (40% width on desktop) */}
+    <div className="lg:col-span-2 space-y-6">
             {/* Interview Question Display */}
             <Card className="p-6 bg-primary/5 border-primary/20">
               <h2 className="text-lg font-semibold text-foreground mb-3">

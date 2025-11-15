@@ -8,6 +8,7 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { getRandomQuestion, getQuestionsByCategory, type InterviewQuestion, type QuestionCategory } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Conversation } from "@/components/cvi/components/conversation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const Index = () => {
   const [liveFeedback, setLiveFeedback] = useState<string>("");
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
   const [isGeneratingLiveFeedback, setIsGeneratingLiveFeedback] = useState(false);
+  const [conversationUrl, setConversationUrl] = useState<string | null>(null);
+  const [conversationToken, setConversationToken] = useState<string | null>(null);
   const { transcript, isListening, isSpeaking, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const { toast } = useToast();
 
@@ -64,6 +67,48 @@ const Index = () => {
 
   const handleStopListening = () => {
     stopListening();
+  };
+
+  // Start the Tavus/Daily conversation by requesting a server-created URL
+  const startConversation = async () => {
+    try {
+      // Prefer Python backend if configured
+      const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      console.log('Starting conversation, calling:', `${backendBase}/api/create-conversation`);
+      
+      // Try Tavus-backed conversation first
+      let resp = await fetch(`${backendBase}/api/create-conversation`, { method: 'POST' });
+      console.log('Backend response status:', resp.status, resp.ok);
+      
+      if (!resp.ok) {
+        // Fallback to simple Daily room creation
+        console.log('Falling back to /api/create-room');
+        resp = await fetch(`${backendBase}/api/create-room`, { method: 'POST' });
+      }
+      if (!resp.ok) {
+        // fallback to Supabase Edge Function if backend not running
+        console.log('Falling back to Supabase function');
+        const { data, error } = await supabase.functions.invoke('create-conversation', { body: {} });
+        if (error) throw error;
+        if (!data?.url) throw new Error('No URL returned from Supabase function');
+        setConversationUrl(data.url as string);
+        return;
+      }
+      const json = await resp.json();
+      console.log('Backend response JSON:', json);
+      
+      if (!json?.url) throw new Error('No URL in backend response');
+      
+      console.log('Setting conversation URL:', json.url);
+      setConversationUrl(json.url as string);
+      if (json.token) {
+        console.log('Setting conversation token');
+        setConversationToken(json.token as string);
+      }
+    } catch (err) {
+      console.error('Failed to start conversation:', err);
+      toast({ title: 'Conversation error', description: 'Failed to start conversation. Check backend and API keys.', variant: 'destructive' });
+    }
   };
 
   const handleGetFeedback = async () => {
@@ -187,6 +232,9 @@ const Index = () => {
               </div>
             </Card>
           </div>
+        </Card>
+      )}
+    </div>
 
           {/* Right Panel - Interactions */}
           <div className="lg:col-span-1 space-y-4">

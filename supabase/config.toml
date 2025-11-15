@@ -1,7 +1,0 @@
-project_id = "hswoozwmojnrshqgktrj"
-
-[functions]
-enabled = true
-
-[functions.interview-feedback]
-verify_jwt = false

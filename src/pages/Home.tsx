@@ -84,9 +84,13 @@ const Home = () => {
 
           {/* CTA Section */}
           <div className="py-12 px-4 mt-2 text-center">
-            <button className=" underline hover:opacity-70 transition-opacity text-lg" onClick={() => navigate('/interview')}>
+            <Button 
+              size="lg" 
+              className="bg-duck-orange hover:bg-duck-orange/90 rounded-full font-semibold px-8" 
+              onClick={() => navigate('/interview')}
+            >
               Start Your Interview
-            </button>
+            </Button>
           </div>
         </div>
       </div>

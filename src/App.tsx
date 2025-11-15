@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import QuestionBank from "./pages/QuestionBank";
 import ResumeReview from "./pages/ResumeReview";
-import TalkToIndustry from "./pages/TalkToIndustry";
+import TalkToProfessionals from "./pages/TalkToProfessionals";
 import AboutUs from "./pages/AboutUs";
 import Navigation from "./components/Navigation";
 
@@ -26,7 +26,7 @@ const App = () => (
           <Route path="/interview" element={<Index />} />
           <Route path="/question-bank" element={<QuestionBank />} />
           <Route path="/resume-review" element={<ResumeReview />} />
-          <Route path="/talk-to-industry" element={<TalkToIndustry />} />
+          <Route path="/talk-to-professionals" element={<TalkToProfessionals />} />
           <Route path="/about" element={<AboutUs />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

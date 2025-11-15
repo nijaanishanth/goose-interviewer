@@ -138,10 +138,14 @@ const Index = () => {
   }, [transcript, isListening, currentQuestion]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(217,50%,18%)] via-[hsl(215,30%,22%)] to-[hsl(25,40%,25%)]">
+    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue">
       {/* Header Section */}
-      <header className="border-b border-border/50 backdrop-blur-sm bg-card/50">
-        <div className="container mx-auto px-6 py-6">
+      <header className="border-b border-border/50 backdrop-blur-sm bg-card/80 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <span className="absolute top-2 left-10 text-2xl">🦆</span>
+          <span className="absolute top-2 right-10 text-2xl">🦆</span>
+        </div>
+        <div className="container mx-auto px-6 py-6 relative z-10">
           <div className="text-center">
             <div className="inline-flex items-center justify-center mb-3">
               <span className="text-5xl">🪿</span>
@@ -150,7 +154,7 @@ const Index = () => {
               Goose Interview Coach
             </h1>
             <p className="text-sm text-muted-foreground">
-              Practice with AI-powered feedback
+              Practice with AI-powered feedback by the lake 🌸
             </p>
           </div>
         </div>
@@ -160,15 +164,17 @@ const Index = () => {
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
           {/* Left Panel - Goose Avatar */}
-          <div className="lg:col-span-2">
-            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-goose-orange/5 via-goose-yellow/5 to-transparent border border-border/50 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="lg:col-span-2 relative">
+            <div className="absolute -top-4 -left-4 text-4xl animate-bounce">🌸</div>
+            <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌷</div>
+            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
               <div className="text-center space-y-4">
                 <div className="text-8xl sm:text-9xl animate-pulse">🪿</div>
                 <div className="space-y-2">
                   <p className="text-lg sm:text-xl font-semibold text-foreground">
                     Ready to Practice
                   </p>
-                  <p className="text-sm text-muted-foreground">Video avatar coming soon</p>
+                  <p className="text-sm text-muted-foreground">🦆 Peaceful lake vibes 🦆</p>
                 </div>
               </div>
             </Card>
@@ -177,7 +183,7 @@ const Index = () => {
           {/* Right Panel - Interactions */}
           <div className="lg:col-span-1 space-y-4">
             {/* Interview Question Display */}
-            <Card className="p-4 bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 shadow-md">
+            <Card className="p-4 bg-gradient-to-br from-lake-blue/10 to-grass-green/5 border border-lake-blue/30 shadow-md backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">
@@ -199,7 +205,7 @@ const Index = () => {
             </Card>
 
             {/* Live Transcript */}
-            <Card className="p-4 shadow-md border border-border/50">
+            <Card className="p-4 bg-card/80 backdrop-blur-sm shadow-md border border-border/50">
               <div className="flex items-center gap-2 mb-3">
                 <Mic className="h-4 w-4 text-foreground" />
                 <h2 className="text-sm font-semibold text-foreground">
@@ -220,7 +226,7 @@ const Index = () => {
             </Card>
 
             {/* Feedback Section */}
-            <Card className="p-4 bg-gradient-to-br from-accent/5 to-transparent border border-accent/20 shadow-md">
+            <Card className="p-4 bg-gradient-to-br from-flower-yellow/10 to-flower-pink/5 border border-flower-yellow/30 shadow-md backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-accent" />
                 <h2 className="text-sm font-semibold text-foreground">
@@ -260,7 +266,7 @@ const Index = () => {
             {/* Action Buttons */}
             <div className="space-y-3">
               <Button 
-                className="w-full h-11 text-sm font-semibold shadow-md hover:shadow-lg transition-all"
+                className="w-full h-11 text-sm font-semibold shadow-md hover:shadow-lg transition-all bg-duck-orange hover:bg-duck-orange/90"
                 size="lg"
                 onClick={handleStartInterview}
               >
@@ -271,7 +277,7 @@ const Index = () => {
               <div className="grid grid-cols-2 gap-2">
                 <Button 
                   variant="outline"
-                  className="h-11 text-sm font-semibold border-2 hover:bg-success-green hover:text-white hover:border-success-green transition-all shadow-sm"
+                  className="h-11 text-sm font-semibold border-2 hover:bg-grass-green hover:text-white hover:border-grass-green transition-all shadow-sm"
                   size="lg"
                   onClick={handleStartListening}
                   disabled={isListening}

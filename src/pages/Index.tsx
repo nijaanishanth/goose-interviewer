@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play, Mic, MicOff, Sparkles } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { getRandomQuestion, type InterviewQuestion } from "@/lib/questionBank";
+import { getRandomQuestion, getQuestionsByCategory, type InterviewQuestion, type QuestionCategory } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Conversation } from "@/components/cvi/components/conversation";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [categoryQuestions, setCategoryQuestions] = useState<InterviewQuestion[]>([]);
   const [feedback, setFeedback] = useState<string>("");
   const [liveFeedback, setLiveFeedback] = useState<string>("");
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
@@ -21,7 +25,7 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleStartInterview = () => {
-    const question = getRandomQuestion();
+    const question = selectedCategory === 'all' ? getRandomQuestion() : getRandomQuestion(selectedCategory as QuestionCategory);
     setCurrentQuestion(question);
     setFeedback("");
     resetTranscript();
@@ -30,6 +34,15 @@ const Index = () => {
       description: "Read the question and click 'Start Listening' when ready to answer.",
     });
   };
+
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      setCategoryQuestions([]);
+      return;
+    }
+    const qs = getQuestionsByCategory(selectedCategory as QuestionCategory);
+    setCategoryQuestions(qs);
+  }, [selectedCategory]);
 
   const handleStartListening = () => {
     if (!browserSupportsSpeechRecognition) {
@@ -181,143 +194,206 @@ const Index = () => {
   }, [transcript, isListening, currentQuestion]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue">
       {/* Header Section */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-6 py-8">
+      <header className="border-b border-border/50 backdrop-blur-sm bg-card/80 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <span className="absolute top-2 left-10 text-2xl">🦆</span>
+          <span className="absolute top-2 right-10 text-2xl">🦆</span>
+        </div>
+        <div className="container mx-auto px-6 py-6 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              🪿 Goose Interview Coach
+            <div className="inline-flex items-center justify-center mb-3">
+              <span className="text-5xl">🪿</span>
+            </div>
+            <h1 className="text-3xl font-bold text-foreground mb-1">
+              Goose Interview Coach
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Practice interview questions with a friendly (but serious) goose.
+            <p className="text-sm text-muted-foreground">
+              Practice with AI-powered feedback by the lake 🌸
             </p>
           </div>
         </div>
       </header>
 
-
-
-{/* Main Content */}
-<main className="container mx-auto px-6 py-8">
-  <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-    <div className="lg:col-span-3">
-      {conversationUrl ? (
-        <Conversation
-          conversationUrl={conversationUrl}
-          conversationToken={conversationToken || undefined}
-          onLeave={() => { setConversationUrl(null); setConversationToken(null); }}
-        />
-      ) : (
-        <Card className="p-8 h-full min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-goose-orange/10 to-goose-yellow/10 border-2 border-goose-orange/20">
-          <div className="text-center space-y-4">
-            <div className="text-9xl">🪿</div>
-            <p className="text-xl font-semibold text-foreground">Goose Avatar</p>
-            <p className="text-muted-foreground">Click below to start the conversation.</p>
-            <Button size="lg" className="mt-2" onClick={startConversation}>
-              <Play className="mr-2 h-5 w-5" /> Start Goose Call
-            </Button>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
+          {/* Left Panel - Goose Avatar */}
+          <div className="lg:col-span-2 relative">
+            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
+              <div className="text-center space-y-4">
+                <div className="text-8xl sm:text-9xl animate-pulse">🪿</div>
+                <div className="space-y-2">
+                  <p className="text-lg sm:text-xl font-semibold text-foreground">
+                    Ready to Practice
+                  </p>
+                </div>
+              </div>
+            </Card>
           </div>
         </Card>
       )}
     </div>
 
-    {/* Right Panel - Interactions (40% width on desktop) */}
-    <div className="lg:col-span-2 space-y-6">
+          {/* Right Panel - Interactions */}
+          <div className="lg:col-span-1 space-y-4">
             {/* Interview Question Display */}
-            <Card className="p-6 bg-primary/5 border-primary/20">
-              <h2 className="text-lg font-semibold text-foreground mb-3">
-                Interview Question
-              </h2>
-                <div className="bg-card rounded-lg p-4 border min-h-[80px]">
-                  {currentQuestion ? (
-                    <div>
-                      <p className="text-foreground font-medium mb-2">{currentQuestion.question}</p>
-                      <p className="text-sm text-muted-foreground">Category: {currentQuestion.category}</p>
-                    </div>
-                  ) : (
-                    <p className="text-foreground">Click start to get your first interview question.</p>
-                  )}
+            <Card className="p-4 bg-gradient-to-br from-lake-blue/10 to-grass-green/5 border border-lake-blue/30 shadow-md backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">
+                  Interview Question
+                </h2>
+              </div>
+              <div className="bg-card/80 backdrop-blur-sm rounded-lg p-3 border border-border/50 min-h-[80px]">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex-1 mr-3">
+                    <label className="block text-xs text-muted-foreground mb-1">Select Category</label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full text-sm rounded-md border px-2 py-1 bg-card"
+                    >
+                      <option value="all">All</option>
+                      <option value="behavioral">Behavioral</option>
+                      <option value="technical">Technical</option>
+                      <option value="situational">Situational</option>
+                      <option value="leadership">Leadership</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Button size="sm" onClick={handleStartInterview} className="ml-2">Random</Button>
+                  </div>
                 </div>
+
+                {currentQuestion ? (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground leading-relaxed">{currentQuestion.question}</p>
+                    <span className="inline-block text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                      {currentQuestion.category}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Click a question below or choose Random to begin your interview practice.</p>
+                )}
+              </div>
+
+              {/* List of questions for selected category */}
+              {selectedCategory !== 'all' && (
+                <div className="mt-3">
+                  <h3 className="text-xs text-muted-foreground mb-2">Questions in {selectedCategory}</h3>
+                  <ScrollArea className="max-h-40 rounded-md border border-border/40 p-2 bg-card/60">
+                    {categoryQuestions.map((q) => (
+                      <button
+                        key={q.id}
+                        onClick={() => {
+                          setCurrentQuestion(q);
+                          setFeedback("");
+                          resetTranscript();
+                          toast({ title: "Question Selected", description: "You can start listening to answer." });
+                        }}
+                        className="w-full text-left p-2 mb-1 rounded hover:bg-muted/50 text-sm"
+                      >
+                        {q.question}
+                      </button>
+                    ))}
+                  </ScrollArea>
+                </div>
+              )}
             </Card>
 
             {/* Live Transcript */}
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-foreground mb-3">
-                Live Transcript
-              </h2>
-              <ScrollArea className="h-40 rounded-lg border bg-muted/30 p-4">
+            <Card className="p-4 bg-card/80 backdrop-blur-sm shadow-md border border-border/50">
+              <div className="flex items-center gap-2 mb-3">
+                <Mic className="h-4 w-4 text-foreground" />
+                <h2 className="text-sm font-semibold text-foreground">
+                  Live Transcript
+                </h2>
+                <span className={`ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isSpeaking ? 'bg-success-green/10 text-success-green' : 'bg-muted text-muted-foreground'}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${isSpeaking ? 'bg-success-green animate-pulse' : 'bg-muted-foreground'}`} />
+                  {isSpeaking ? 'Active' : 'Silent'}
+                </span>
+              </div>
+              <ScrollArea className="h-32 rounded-lg border border-border/50 bg-muted/20 p-3">
                 {transcript ? (
-                  <p className="text-sm text-foreground">{transcript}</p>
+                  <p className="text-xs text-foreground leading-relaxed">{transcript}</p>
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">Your speech will appear here in real-time...</p>
+                  <p className="text-xs text-muted-foreground italic">Your speech will appear here...</p>
                 )}
               </ScrollArea>
             </Card>
 
             {/* Feedback Section */}
-            <Card className="p-6 bg-accent/5 border-accent/20">
-              <h2 className="text-lg font-semibold text-foreground mb-3">
-                Feedback from the Goose
-              </h2>
-              {/* Live Feedback (while answering) */}
-              <div className="bg-card rounded-lg p-4 border mb-4 min-h-[80px]">
-                {isGeneratingLiveFeedback ? (
-                  <p className="text-sm text-foreground">Analyzing live response...</p>
-                ) : liveFeedback ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{liveFeedback}</p>
-                ) : (
-                  <p className="text-muted-foreground italic">Live feedback will appear here while you answer.</p>
-                )}
+            <Card className="p-4 bg-gradient-to-br from-flower-yellow/10 to-flower-pink/5 border border-flower-yellow/30 shadow-md backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-accent" />
+                <h2 className="text-sm font-semibold text-foreground">
+                  AI Feedback
+                </h2>
               </div>
-              <div className="bg-card rounded-lg p-4 border min-h-[100px]">
+              
+              {/* Live Feedback */}
+              {(liveFeedback || isGeneratingLiveFeedback) && (
+                <div className="bg-card/80 backdrop-blur-sm rounded-lg p-3 border border-border/50 mb-3 min-h-[60px]">
+                  {isGeneratingLiveFeedback ? (
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                      <p className="text-xs text-muted-foreground">Analyzing...</p>
+                    </div>
+                  ) : liveFeedback ? (
+                    <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed">{liveFeedback}</p>
+                  ) : null}
+                </div>
+              )}
+              
+              {/* Final Feedback */}
+              <div className="bg-card/80 backdrop-blur-sm rounded-lg p-3 border border-border/50 min-h-[80px]">
                 {isGeneratingFeedback ? (
-                  <p className="text-sm text-foreground">Generating feedback...</p>
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                    <p className="text-xs text-muted-foreground">Generating feedback...</p>
+                  </div>
                 ) : feedback ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{feedback}</p>
+                  <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed">{feedback}</p>
                 ) : (
-                  <p className="text-muted-foreground italic">Feedback will appear here after analysis.</p>
+                  <p className="text-xs text-muted-foreground italic">Complete your answer to receive feedback.</p>
                 )}
               </div>
             </Card>
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <div className="flex items-center space-x-2 mb-1">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${isSpeaking ? 'bg-green-100 text-green-800' : 'bg-muted text-muted-foreground'}`}>
-                  <span className={`h-2 w-2 rounded-full mr-2 ${isSpeaking ? 'bg-green-500' : 'bg-gray-400'}`} />
-                  {isSpeaking ? 'Speaking...' : 'Silent'}
-                </span>
-                <span className="text-xs text-muted-foreground">(microphone activity)</span>
-              </div>
               <Button 
-                className="w-full h-12 text-base font-semibold"
+                className="w-full h-11 text-sm font-semibold shadow-md hover:shadow-lg transition-all bg-duck-orange hover:bg-duck-orange/90"
                 size="lg"
                 onClick={handleStartInterview}
               >
-                <Play className="mr-2 h-5 w-5" />
-                Start Interview
+                <Play className="mr-2 h-4 w-4" />
+                Start New Question
               </Button>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Button 
                   variant="outline"
-                  className="h-12 font-semibold border-2 hover:bg-success-green hover:text-white hover:border-success-green transition-colors"
+                  className="h-11 text-sm font-semibold border-2 hover:bg-grass-green hover:text-white hover:border-grass-green transition-all shadow-sm"
                   size="lg"
                   onClick={handleStartListening}
+                  disabled={isListening}
                 >
-                  <Mic className="mr-2 h-5 w-5" />
-                  Start Listening
+                  <Mic className="mr-1.5 h-4 w-4" />
+                  {isListening ? "Listening..." : "Start"}
                 </Button>
                 
                 <Button 
                   variant="outline"
-                  className="h-12 font-semibold border-2 hover:bg-destructive hover:text-white hover:border-destructive transition-colors"
+                  className="h-11 text-sm font-semibold border-2 hover:bg-destructive hover:text-white hover:border-destructive transition-all shadow-sm"
                   size="lg"
                   onClick={handleStopListening}
+                  disabled={!isListening}
                 >
-                  <MicOff className="mr-2 h-5 w-5" />
-                  Stop Listening
+                  <MicOff className="mr-1.5 h-4 w-4" />
+                  Stop
                 </Button>
               </div>
             </div>

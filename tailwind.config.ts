@@ -57,16 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        goose: {
-          orange: "hsl(var(--goose-orange))",
-          yellow: "hsl(var(--goose-yellow))",
-        },
-        professional: {
-          blue: "hsl(var(--professional-blue))",
-        },
-        success: {
-          green: "hsl(var(--success-green))",
-        },
+        "lake-blue": "hsl(var(--lake-blue))",
+        "lake-light": "hsl(var(--lake-light))",
+        "grass-green": "hsl(var(--grass-green))",
+        "flower-pink": "hsl(var(--flower-pink))",
+        "flower-yellow": "hsl(var(--flower-yellow))",
+        "bench-brown": "hsl(var(--bench-brown))",
+        "duck-orange": "hsl(var(--duck-orange))",
+      },
+      backgroundImage: {
+        'gradient-bg': 'var(--gradient-bg)',
+        'gradient-card': 'var(--gradient-card)',
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -35,7 +35,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     recognitionRef.current.interimResults = true;
     recognitionRef.current.lang = 'en-US';
 
-    recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+    recognitionRef.current.onresult = (event: any) => {
       let interimTranscript = '';
       let finalTranscript = '';
 

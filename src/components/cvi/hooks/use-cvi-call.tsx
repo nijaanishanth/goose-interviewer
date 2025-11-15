@@ -9,9 +9,15 @@ export const useCVICall = (): {
 
 	const joinCall = useCallback(
 		({ url, token }: { url: string; token?: string }) => {
-			daily?.join({
+			console.log('useCVICall.joinCall called with:', { url, token, hasDaily: !!daily });
+			
+			if (!daily) {
+				console.error('Daily instance not available!');
+				return;
+			}
+			
+			const joinOptions: any = {
 				url: url,
-				token: token,
 				inputSettings: {
 					audio: {
 						processor: {
@@ -19,7 +25,17 @@ export const useCVICall = (): {
 						},
 					},
 				},
-			});
+			};
+			
+			// Only add token if it's actually provided and not undefined
+			if (token) {
+				joinOptions.token = token;
+			}
+			
+			console.log('Calling daily.join with options:', joinOptions);
+			daily.join(joinOptions)
+				.then(() => console.log('daily.join() succeeded'))
+				.catch((err) => console.error('daily.join() failed:', err));
 		},
 		[daily]
 	);

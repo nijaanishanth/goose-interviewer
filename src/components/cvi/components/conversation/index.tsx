@@ -101,8 +101,19 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	const meetingState = useMeetingState();
 	const { hasMicError } = useDevices()
 
+	// Debug logging
+	useEffect(() => {
+		console.log('Conversation component state:', {
+			conversationUrl,
+			conversationToken,
+			meetingState,
+			hasMicError
+		});
+	}, [conversationUrl, conversationToken, meetingState, hasMicError]);
+
 	useEffect(() => {
 		if (meetingState === 'error') {
+			console.error('Meeting state is error, calling onLeave');
 			onLeave();
 		}
 	}, [meetingState, onLeave]);
@@ -110,6 +121,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	// Initialize call when conversation is available
 	useEffect(() => {
 		if (conversationUrl) {
+			console.log('Joining call with URL:', conversationUrl);
 			joinCall({ url: conversationUrl, token: conversationToken });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

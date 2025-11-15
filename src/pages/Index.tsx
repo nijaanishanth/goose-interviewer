@@ -1,9 +1,96 @@
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, Play } from "lucide-react";
+import { Play, Mic, MicOff, Sparkles } from "lucide-react";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { getRandomQuestion, type InterviewQuestion } from "@/lib/questionBank";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
+  const [feedback, setFeedback] = useState<string>("");
+  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+  const { transcript, isListening, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+  const { toast } = useToast();
+
+  const handleStartInterview = () => {
+    const question = getRandomQuestion();
+    setCurrentQuestion(question);
+    setFeedback("");
+    resetTranscript();
+    toast({
+      title: "New Question",
+      description: "Read the question and click 'Start Listening' when ready to answer.",
+    });
+  };
+
+  const handleStartListening = () => {
+    if (!browserSupportsSpeechRecognition) {
+      toast({
+        title: "Not Supported",
+        description: "Your browser doesn't support speech recognition. Try Chrome or Edge.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!currentQuestion) {
+      toast({
+        title: "No Question",
+        description: "Please start the interview first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    resetTranscript();
+    startListening();
+  };
+
+  const handleStopListening = () => {
+    stopListening();
+  };
+
+  const handleGetFeedback = async () => {
+    if (!currentQuestion || !transcript.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please answer the question before requesting feedback.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingFeedback(true);
+    setFeedback("");
+
+    try {
+      const { data, error } = await supabase.functions.invoke('interview-feedback', {
+        body: {
+          question: currentQuestion.question,
+          transcript: transcript,
+        },
+      });
+
+      if (error) throw error;
+
+      setFeedback(data.feedback);
+      toast({
+        title: "Feedback Ready",
+        description: "The goose has analyzed your response!",
+      });
+    } catch (error) {
+      console.error('Error getting feedback:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate feedback. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingFeedback(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header Section */}

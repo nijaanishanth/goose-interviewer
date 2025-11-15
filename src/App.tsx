@@ -6,6 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import QuestionBank from "./pages/QuestionBank";
+import ResumeReview from "./pages/ResumeReview";
+import TalkToIndustry from "./pages/TalkToIndustry";
+import AboutUs from "./pages/AboutUs";
+import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
 
@@ -15,9 +20,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <Navigation />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/interview" element={<Index />} />
+          <Route path="/question-bank" element={<QuestionBank />} />
+          <Route path="/resume-review" element={<ResumeReview />} />
+          <Route path="/talk-to-industry" element={<TalkToIndustry />} />
+          <Route path="/about" element={<AboutUs />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

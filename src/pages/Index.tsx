@@ -220,16 +220,28 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
-          {/* Left Panel - Goose Avatar */}
+          {/* Left Panel - Goose Avatar or Tavus Video */}
           <div className="lg:col-span-2 relative">
             <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
-              {/* Goose component will handle speaking the question and animation */}
-              <Goose question={currentQuestion?.question ?? null} />
+              {conversationUrl ? (
+                <Conversation
+                  conversationUrl={conversationUrl}
+                  conversationToken={conversationToken || undefined}
+                  onLeave={() => { setConversationUrl(null); setConversationToken(null); }}
+                />
+              ) : (
+                <>
+                  {/* Goose component will handle speaking the question and animation */}
+                  <Goose question={currentQuestion?.question ?? null} />
+                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+                    <Button size="lg" onClick={startConversation} className="shadow-lg">
+                      <Play className="mr-2 h-5 w-5" /> Start Tavus Interview
+                    </Button>
+                  </div>
+                </>
+              )}
             </Card>
           </div>
-        </Card>
-      )}
-    </div>
 
           {/* Right Panel - Interactions */}
           <div className="lg:col-span-1 space-y-4">

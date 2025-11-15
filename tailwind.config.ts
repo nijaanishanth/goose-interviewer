@@ -68,6 +68,10 @@ export default {
           green: "hsl(var(--success-green))",
         },
       },
+      backgroundImage: {
+        'gradient-bg': 'var(--gradient-bg)',
+        'gradient-card': 'var(--gradient-card)',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

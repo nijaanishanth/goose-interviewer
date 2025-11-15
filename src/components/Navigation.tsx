@@ -8,7 +8,7 @@ const Navigation = () => {
     { to: "/interview", label: "Interview Practice", icon: MessageSquare },
     { to: "/question-bank", label: "Question Bank", icon: BookOpen },
     { to: "/resume-review", label: "Resume Review", icon: FileText },
-    { to: "/talk-to-industry", label: "Talk to Industry", icon: Users },
+  { to: "/talk-to-professionals", label: "Talk to Professionals", icon: Users },
     { to: "/about", label: "About Us", icon: Info },
   ];
 

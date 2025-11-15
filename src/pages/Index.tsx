@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Play, Mic, MicOff, Sparkles } from "lucide-react";
+import { Play, Mic, MicOff, Sparkles, ArrowLeft } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { getRandomQuestion, type InterviewQuestion } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
   const [feedback, setFeedback] = useState<string>("");
   const [liveFeedback, setLiveFeedback] = useState<string>("");
@@ -140,16 +142,27 @@ const Index = () => {
       {/* Header Section */}
       <header className="border-b border-border/50 backdrop-blur-sm bg-card/50">
         <div className="container mx-auto px-6 py-6">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center mb-3">
-              <span className="text-5xl">🪿</span>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="absolute left-0 top-1/2 -translate-y-1/2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center mb-3">
+                <span className="text-5xl">🪿</span>
+              </div>
+              <h1 className="text-3xl font-bold text-foreground mb-1">
+                Goose Interview Coach
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Practice with AI-powered feedback
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-1">
-              Goose Interview Coach
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Practice with AI-powered feedback
-            </p>
           </div>
         </div>
       </header>

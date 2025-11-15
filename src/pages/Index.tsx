@@ -5,13 +5,15 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play, Mic, MicOff, Sparkles, ArrowLeft } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { getRandomQuestion, type InterviewQuestion } from "@/lib/questionBank";
+import { getRandomQuestion, getQuestionsByCategory, type InterviewQuestion, type QuestionCategory } from "@/lib/questionBank";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [categoryQuestions, setCategoryQuestions] = useState<InterviewQuestion[]>([]);
   const [feedback, setFeedback] = useState<string>("");
   const [liveFeedback, setLiveFeedback] = useState<string>("");
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
@@ -20,7 +22,7 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleStartInterview = () => {
-    const question = getRandomQuestion();
+    const question = selectedCategory === 'all' ? getRandomQuestion() : getRandomQuestion(selectedCategory as QuestionCategory);
     setCurrentQuestion(question);
     setFeedback("");
     resetTranscript();
@@ -29,6 +31,15 @@ const Index = () => {
       description: "Read the question and click 'Start Listening' when ready to answer.",
     });
   };
+
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      setCategoryQuestions([]);
+      return;
+    }
+    const qs = getQuestionsByCategory(selectedCategory as QuestionCategory);
+    setCategoryQuestions(qs);
+  }, [selectedCategory]);
 
   const handleStartListening = () => {
     if (!browserSupportsSpeechRecognition) {
@@ -196,6 +207,26 @@ const Index = () => {
                 </h2>
               </div>
               <div className="bg-card/80 backdrop-blur-sm rounded-lg p-3 border border-border/50 min-h-[80px]">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex-1 mr-3">
+                    <label className="block text-xs text-muted-foreground mb-1">Select Category</label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full text-sm rounded-md border px-2 py-1 bg-card"
+                    >
+                      <option value="all">All</option>
+                      <option value="behavioral">Behavioral</option>
+                      <option value="technical">Technical</option>
+                      <option value="situational">Situational</option>
+                      <option value="leadership">Leadership</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Button size="sm" onClick={handleStartInterview} className="ml-2">Random</Button>
+                  </div>
+                </div>
+
                 {currentQuestion ? (
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-foreground leading-relaxed">{currentQuestion.question}</p>
@@ -204,9 +235,32 @@ const Index = () => {
                     </span>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Click start to begin your interview practice.</p>
+                  <p className="text-sm text-muted-foreground">Click a question below or choose Random to begin your interview practice.</p>
                 )}
               </div>
+
+              {/* List of questions for selected category */}
+              {selectedCategory !== 'all' && (
+                <div className="mt-3">
+                  <h3 className="text-xs text-muted-foreground mb-2">Questions in {selectedCategory}</h3>
+                  <ScrollArea className="max-h-40 rounded-md border border-border/40 p-2 bg-card/60">
+                    {categoryQuestions.map((q) => (
+                      <button
+                        key={q.id}
+                        onClick={() => {
+                          setCurrentQuestion(q);
+                          setFeedback("");
+                          resetTranscript();
+                          toast({ title: "Question Selected", description: "You can start listening to answer." });
+                        }}
+                        className="w-full text-left p-2 mb-1 rounded hover:bg-muted/50 text-sm"
+                      >
+                        {q.question}
+                      </button>
+                    ))}
+                  </ScrollArea>
+                </div>
+              )}
             </Card>
 
             {/* Live Transcript */}

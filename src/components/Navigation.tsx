@@ -13,7 +13,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="glass sticky top-0 z-50 smooth-transition">
+    <nav className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-2">
@@ -23,8 +23,8 @@ const Navigation = () => {
                   <NavLink
                     to={item.to}
                     end={item.to === "/"}
-                    className="p-3 text-muted-foreground hover:text-foreground smooth-transition-fast rounded-lg hover:bg-muted/50 hover:scale-110 active:scale-95"
-                    activeClassName="text-primary bg-muted scale-105"
+                    className="p-3 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50"
+                    activeClassName="text-primary bg-muted"
                   >
                     <item.icon className="h-5 w-5" />
                   </NavLink>

@@ -2,15 +2,7 @@ import { Card } from "@/components/ui/card";
 
 const QuestionBank = () => {
   return (
-    <div className="min-h-screen p-8 relative overflow-hidden">
-      {/* Mirror Lake Background */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center -z-10"
-        style={{ backgroundImage: 'url(/mirror-lake.jpeg)' }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-lake-blue/40 via-grass-green/30 to-lake-light/40" />
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue p-8 relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-20 text-4xl">🦆</div>
         <div className="absolute bottom-20 right-20 text-4xl">🦆</div>
@@ -18,8 +10,8 @@ const QuestionBank = () => {
         <div className="absolute bottom-1/3 left-10 text-3xl">🌷</div>
       </div>
       <div className="container mx-auto relative z-10">
-        <Card variant="glass" className="p-8 animate-fade-in hover:shadow-2xl">
-          <h1 className="text-4xl font-bold mb-4 text-lake-blue smooth-transition hover:scale-105">
+        <Card className="p-8 bg-card/95 backdrop-blur-sm border border-border/50 shadow-xl">
+          <h1 className="text-4xl font-bold mb-4 text-lake-blue">
             📚 Question Bank
           </h1>
           <p className="text-foreground/80">

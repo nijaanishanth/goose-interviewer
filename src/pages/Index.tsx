@@ -138,16 +138,9 @@ const Index = () => {
   }, [transcript, isListening, currentQuestion]);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Mirror Lake Background */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center -z-10"
-        style={{ backgroundImage: 'url(/mirror-lake.jpeg)' }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-lake-blue/30 via-grass-green/20 to-lake-light/30" />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-blue">
       {/* Header Section */}
-      <header className="border-b border-border/50 backdrop-blur-md bg-card/80 relative overflow-hidden shadow-sm">
+      <header className="border-b border-border/50 backdrop-blur-sm bg-card/80 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <span className="absolute top-2 left-10 text-2xl">🦆</span>
           <span className="absolute top-2 right-10 text-2xl">🦆</span>
@@ -174,7 +167,7 @@ const Index = () => {
           <div className="lg:col-span-2 relative">
             <div className="absolute -top-4 -left-4 text-4xl animate-bounce">🌸</div>
             <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌷</div>
-            <Card variant="glass" className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 smooth-transition hover:-translate-y-1">
+            <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
               <div className="text-center space-y-4">
                 <div className="text-8xl sm:text-9xl animate-pulse">🪿</div>
                 <div className="space-y-2">
@@ -190,7 +183,7 @@ const Index = () => {
           {/* Right Panel - Interactions */}
           <div className="lg:col-span-1 space-y-4">
             {/* Interview Question Display */}
-            <Card variant="glass" className="p-4 bg-gradient-to-br from-lake-blue/10 to-grass-green/5 border-lake-blue/30 smooth-transition hover:shadow-lg">
+            <Card className="p-4 bg-gradient-to-br from-lake-blue/10 to-grass-green/5 border border-lake-blue/30 shadow-md backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">
@@ -212,7 +205,7 @@ const Index = () => {
             </Card>
 
             {/* Live Transcript */}
-            <Card variant="glass" className="p-4 smooth-transition hover:shadow-lg">
+            <Card className="p-4 bg-card/80 backdrop-blur-sm shadow-md border border-border/50">
               <div className="flex items-center gap-2 mb-3">
                 <Mic className="h-4 w-4 text-foreground" />
                 <h2 className="text-sm font-semibold text-foreground">
@@ -233,7 +226,7 @@ const Index = () => {
             </Card>
 
             {/* Feedback Section */}
-            <Card variant="glass" className="p-4 bg-gradient-to-br from-flower-yellow/10 to-flower-pink/5 border-flower-yellow/30 smooth-transition hover:shadow-lg">
+            <Card className="p-4 bg-gradient-to-br from-flower-yellow/10 to-flower-pink/5 border border-flower-yellow/30 shadow-md backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-accent" />
                 <h2 className="text-sm font-semibold text-foreground">

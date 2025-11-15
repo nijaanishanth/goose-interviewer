@@ -130,11 +130,16 @@ const Index = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3">
                 Interview Question
               </h2>
-              <div className="bg-card rounded-lg p-4 border">
-                <p className="text-foreground">
-                  Click start to get your first interview question.
-                </p>
-              </div>
+                <div className="bg-card rounded-lg p-4 border min-h-[80px]">
+                  {currentQuestion ? (
+                    <div>
+                      <p className="text-foreground font-medium mb-2">{currentQuestion.question}</p>
+                      <p className="text-sm text-muted-foreground">Category: {currentQuestion.category}</p>
+                    </div>
+                  ) : (
+                    <p className="text-foreground">Click start to get your first interview question.</p>
+                  )}
+                </div>
             </Card>
 
             {/* Live Transcript */}
@@ -143,9 +148,11 @@ const Index = () => {
                 Live Transcript
               </h2>
               <ScrollArea className="h-40 rounded-lg border bg-muted/30 p-4">
-                <p className="text-sm text-muted-foreground italic">
-                  Your speech will appear here in real-time...
-                </p>
+                {transcript ? (
+                  <p className="text-sm text-foreground">{transcript}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Your speech will appear here in real-time...</p>
+                )}
               </ScrollArea>
             </Card>
 
@@ -155,9 +162,13 @@ const Index = () => {
                 Feedback from the Goose
               </h2>
               <div className="bg-card rounded-lg p-4 border min-h-[100px]">
-                <p className="text-muted-foreground italic">
-                  Feedback will appear here after analysis.
-                </p>
+                {isGeneratingFeedback ? (
+                  <p className="text-sm text-foreground">Generating feedback...</p>
+                ) : feedback ? (
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{feedback}</p>
+                ) : (
+                  <p className="text-muted-foreground italic">Feedback will appear here after analysis.</p>
+                )}
               </div>
             </Card>
 
@@ -166,6 +177,7 @@ const Index = () => {
               <Button 
                 className="w-full h-12 text-base font-semibold"
                 size="lg"
+                onClick={handleStartInterview}
               >
                 <Play className="mr-2 h-5 w-5" />
                 Start Interview
@@ -176,6 +188,7 @@ const Index = () => {
                   variant="outline"
                   className="h-12 font-semibold border-2 hover:bg-success-green hover:text-white hover:border-success-green transition-colors"
                   size="lg"
+                  onClick={handleStartListening}
                 >
                   <Mic className="mr-2 h-5 w-5" />
                   Start Listening
@@ -185,6 +198,7 @@ const Index = () => {
                   variant="outline"
                   className="h-12 font-semibold border-2 hover:bg-destructive hover:text-white hover:border-destructive transition-colors"
                   size="lg"
+                  onClick={handleStopListening}
                 >
                   <MicOff className="mr-2 h-5 w-5" />
                   Stop Listening

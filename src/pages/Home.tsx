@@ -6,7 +6,15 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lake-light via-grass-green/30 to-lake-light relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Mirror Lake Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url(/mirror-lake.jpeg)' }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-lake-blue/40 via-grass-green/30 to-lake-light/40 backdrop-blur-[2px]" />
+      </div>
+      
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute bottom-0 left-0 w-32 h-32 text-6xl">🌸</div>

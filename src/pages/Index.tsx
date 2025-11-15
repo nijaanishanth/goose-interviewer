@@ -176,8 +176,6 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
           {/* Left Panel - Goose Avatar */}
           <div className="lg:col-span-2 relative">
-            <div className="absolute -top-4 -left-4 text-4xl animate-bounce">🌸</div>
-            <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌷</div>
             <Card className="p-6 sm:p-8 h-full min-h-[400px] sm:min-h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-flower-yellow/10 via-lake-light/20 to-grass-green/10 border border-border/50 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm">
               <div className="text-center space-y-4">
                 <div className="text-8xl sm:text-9xl animate-pulse">🪿</div>
@@ -185,7 +183,6 @@ const Index = () => {
                   <p className="text-lg sm:text-xl font-semibold text-foreground">
                     Ready to Practice
                   </p>
-                  <p className="text-sm text-muted-foreground">🦆 Peaceful lake vibes 🦆</p>
                 </div>
               </div>
             </Card>

@@ -14,7 +14,7 @@ const Navigation = () => {
 
   return (
     <nav className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto py-1 px-4">
         <TooltipProvider>
           <div className="flex items-center justify-center space-x-2">
             {navItems.map((item) => (

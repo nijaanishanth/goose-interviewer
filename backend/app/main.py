@@ -8,7 +8,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-#update pe lase iedhasdnasjkd asdnkjadnjksanjkdldab dkjsabnjk
+#update pe lase iedhasdnasjkd asdnkjadnjksanjkdldab dkjsabnjk dajkdhkjsa dajkdnsakj
 # Load environment variables from .env if present
 load_dotenv()
 
@@ -133,12 +133,15 @@ async def create_conversation():
     )
 
     if not tavus_api_key or not replica_id:
-        # Fallback so front-end can still function in dev without Tavus
-        logger.warning(
-            "create_conversation: Tavus not fully configured (has_key=%s, has_replica=%s), falling back to Daily",
+        # No fallback - Tavus only jhcakjdkjasb
+        logger.error(
+            "create_conversation: Tavus not configured (has_key=%s, has_replica=%s)",
             bool(tavus_api_key), bool(replica_id)
         )
-        return await create_room()
+        raise HTTPException(
+            status_code=500, 
+            detail="Tavus is not configured. Please set TAVUS_API_KEY and TAVUS_REPLICA_ID in backend/.env"
+        )
 
     url = f"{api_base}{path}"
     headers = {

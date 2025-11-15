@@ -25,6 +25,11 @@ const Index = () => {
   const { transcript, isListening, isSpeaking, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const { toast } = useToast();
 
+  // Debug: Log when conversationUrl changes
+  useEffect(() => {
+    console.log('conversationUrl changed:', conversationUrl);
+  }, [conversationUrl]);
+
   const handleStartInterview = () => {
     const question = selectedCategory === 'all' ? getRandomQuestion() : getRandomQuestion(selectedCategory as QuestionCategory);
     setCurrentQuestion(question);
@@ -70,31 +75,22 @@ const Index = () => {
     stopListening();
   };
 
-  // Start the Tavus/Daily conversation by requesting a server-created URL
+  // Start the Tavus conversation by requesting a server-created URL
   const startConversation = async () => {
     try {
-      // Prefer Python backend if configured
+      // Call Python backend to create Tavus conversation
       const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
       console.log('Starting conversation, calling:', `${backendBase}/api/create-conversation`);
       
-      // Try Tavus-backed conversation first
-      let resp = await fetch(`${backendBase}/api/create-conversation`, { method: 'POST' });
+      const resp = await fetch(`${backendBase}/api/create-conversation`, { method: 'POST' });
       console.log('Backend response status:', resp.status, resp.ok);
       
       if (!resp.ok) {
-        // Fallback to simple Daily room creation
-        console.log('Falling back to /api/create-room');
-        resp = await fetch(`${backendBase}/api/create-room`, { method: 'POST' });
+        const errorText = await resp.text();
+        console.error('Backend error:', errorText);
+        throw new Error(`Backend error: ${resp.status} - ${errorText}`);
       }
-      if (!resp.ok) {
-        // fallback to Supabase Edge Function if backend not running
-        console.log('Falling back to Supabase function');
-        const { data, error } = await supabase.functions.invoke('create-conversation', { body: {} });
-        if (error) throw error;
-        if (!data?.url) throw new Error('No URL returned from Supabase function');
-        setConversationUrl(data.url as string);
-        return;
-      }
+      
       const json = await resp.json();
       console.log('Backend response JSON:', json);
       
@@ -108,7 +104,11 @@ const Index = () => {
       }
     } catch (err) {
       console.error('Failed to start conversation:', err);
-      toast({ title: 'Conversation error', description: 'Failed to start conversation. Check backend and API keys.', variant: 'destructive' });
+      toast({ 
+        title: 'Conversation error', 
+        description: err instanceof Error ? err.message : 'Failed to start conversation. Check backend and Tavus API keys.', 
+        variant: 'destructive' 
+      });
     }
   };
 

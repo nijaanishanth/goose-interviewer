@@ -1,5 +1,6 @@
 import { NavLink } from "@/components/NavLink";
 import { Home, MessageSquare, BookOpen, FileText, Users, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Navigation = () => {
   const navItems = [
@@ -14,20 +15,27 @@ const Navigation = () => {
   return (
     <nav className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-1 overflow-x-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-              activeClassName="text-primary border-b-2 border-primary"
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </div>
+        <TooltipProvider>
+          <div className="flex items-center justify-center space-x-2">
+            {navItems.map((item) => (
+              <Tooltip key={item.to}>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to={item.to}
+                    end={item.to === "/"}
+                    className="p-3 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50"
+                    activeClassName="text-primary bg-muted"
+                  >
+                    <item.icon className="h-5 w-5" />
+                  </NavLink>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{item.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </TooltipProvider>
       </div>
     </nav>
   );

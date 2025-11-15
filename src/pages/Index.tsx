@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,8 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 const Index = () => {
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
   const [feedback, setFeedback] = useState<string>("");
+  const [liveFeedback, setLiveFeedback] = useState<string>("");
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
-  const { transcript, isListening, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+  const [isGeneratingLiveFeedback, setIsGeneratingLiveFeedback] = useState(false);
+  const { transcript, isListening, isSpeaking, startListening, stopListening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const { toast } = useToast();
 
   const handleStartInterview = () => {
@@ -91,6 +93,48 @@ const Index = () => {
     }
   };
 
+  // Debounced live feedback while the user is speaking / interim transcript updates
+  useEffect(() => {
+    if (!currentQuestion) return;
+    if (!transcript || !transcript.trim()) {
+      setLiveFeedback("");
+      return;
+    }
+
+    // Only request live feedback while listening to avoid spamming when not in an answer
+    if (!isListening) return;
+
+    const controller = new AbortController();
+    const id = setTimeout(async () => {
+      setIsGeneratingLiveFeedback(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('interview-feedback', {
+          body: {
+            question: currentQuestion.question,
+            transcript: transcript,
+            // hint to server this is a live/partial request
+            partial: true,
+          },
+          signal: controller.signal,
+        });
+
+        if (error) throw error;
+        setLiveFeedback(data.feedback || "");
+      } catch (err: unknown) {
+        // Narrow the unknown to an object with an optional `name` property without using `any`
+        if (typeof err === 'object' && err !== null && 'name' in err && (err as { name?: unknown }).name === 'AbortError') return;
+        console.error('Live feedback error:', err);
+      } finally {
+        setIsGeneratingLiveFeedback(false);
+      }
+    }, 1200); // 1.2s debounce after last interim update
+
+    return () => {
+      clearTimeout(id);
+      controller.abort();
+    };
+  }, [transcript, isListening, currentQuestion]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header Section */}
@@ -161,6 +205,16 @@ const Index = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3">
                 Feedback from the Goose
               </h2>
+              {/* Live Feedback (while answering) */}
+              <div className="bg-card rounded-lg p-4 border mb-4 min-h-[80px]">
+                {isGeneratingLiveFeedback ? (
+                  <p className="text-sm text-foreground">Analyzing live response...</p>
+                ) : liveFeedback ? (
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{liveFeedback}</p>
+                ) : (
+                  <p className="text-muted-foreground italic">Live feedback will appear here while you answer.</p>
+                )}
+              </div>
               <div className="bg-card rounded-lg p-4 border min-h-[100px]">
                 {isGeneratingFeedback ? (
                   <p className="text-sm text-foreground">Generating feedback...</p>
@@ -174,6 +228,13 @@ const Index = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
+              <div className="flex items-center space-x-2 mb-1">
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${isSpeaking ? 'bg-green-100 text-green-800' : 'bg-muted text-muted-foreground'}`}>
+                  <span className={`h-2 w-2 rounded-full mr-2 ${isSpeaking ? 'bg-green-500' : 'bg-gray-400'}`} />
+                  {isSpeaking ? 'Speaking...' : 'Silent'}
+                </span>
+                <span className="text-xs text-muted-foreground">(microphone activity)</span>
+              </div>
               <Button 
                 className="w-full h-12 text-base font-semibold"
                 size="lg"
